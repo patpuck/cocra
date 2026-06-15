@@ -45,7 +45,7 @@ function lib.daemon(func, ...)
     while true do func(table.unpack(args)) end
 end
 
-function pp.ppprint(...)
+function lib.ppprint(...)
     local maxlen = 8
     local tstr = textutils.formatTime(os.time("local"))
     local msgs = {...}
@@ -65,6 +65,6 @@ function pp.ppprint(...)
     return msg
 end
 
-function pp.print(...) print(pp.ppprint(...)) end
+function lib.print(...) print(pp.ppprint(...)) end
 
 return lib
