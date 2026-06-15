@@ -42,7 +42,9 @@ end
 
 function lib.daemon(func, ...)
     local args = {...}    
-    while true do func(table.unpack(args)) end
+    return function()
+        while true do func(table.unpack(args)) end
+    end
 end
 
 function lib.ppprint(...)
