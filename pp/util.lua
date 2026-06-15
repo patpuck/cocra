@@ -7,7 +7,7 @@ function lib.mVec(M) return vector.new(M[1][1], M[1][2], M[1][3]) end
 function lib.fromPolar(r, theta, y) return vector.new( r * math.cos(theta), y or 0, -r * math.sin(theta) ) end
 function lib.clamp(n, min, max) return math.max(min, math.min(n, max)) end
 function lib.invLerp(n, min, max) return (n-min)/(max-min) end
-function lib.invLerpClamped(n, min, max) return clamp( invLerp( n, min, max ), 0, 1 ) end
+function lib.invLerpClamped(n, min, max) return lib.clamp( lib.invLerp( n, min, max ), 0, 1 ) end
 function lib.vMat(v1,v2,v3)
     return  matrix.fromVector( v1 , false )
         :vstack(matrix.fromVector( v2 , false ))
@@ -27,7 +27,7 @@ function lib.pitchMatrix(pitch)
     local xhatP = vector.new( 0 , 1 , 0 ):cross( zhatP ):normalize()
     local yhatP = zhatP:cross( xhatP ):normalize()
 
-    return vMat( xhatP, yhatP, zhatP ), xhatP, yhatP, zhatP
+    return lib.vMat( xhatP, yhatP, zhatP ), xhatP, yhatP, zhatP
 
 end
 function lib.yawMatrix(yaw)
@@ -36,7 +36,7 @@ function lib.yawMatrix(yaw)
     local zhatY   = xhatY:cross( vector.new( 0 , 1 , 0 ) ):normalize()
     local yhatY   = zhatY:cross( xhatY ):normalize()
 
-    return vMat( xhatY, yhatY, zhatY ), xhatY, yhatY, zhatY
+    return lib.vMat( xhatY, yhatY, zhatY ), xhatY, yhatY, zhatY
 
 end
 
@@ -58,13 +58,13 @@ function lib.ppprint(...)
         elseif type(v) == "string" then
             v = v
         else
-            v = pp.ren(v)
+            v = lib.ren(v)
         end
         msg = msg..v.." "
     end
     return msg
 end
 
-function lib.print(...) print(pp.ppprint(...)) end
+function lib.print(...) print(lib.ppprint(...)) end
 
 return lib
