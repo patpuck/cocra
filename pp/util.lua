@@ -69,4 +69,105 @@ end
 
 function lib.print(...) print(lib.ppprint(...)) end
 
+-- =======================================================================================================
+-- patnet
+-- =======================================================================================================
+
+lib.net = {}
+
+peripheral.find("modem", rednet.open)
+
+lib.net.STATUS          = "OFFLINE"
+lib.net.PROTOCOL        = "gd_patmesh"
+lib.net.COMPID          = os.getComputerID()
+lib.net.networkState    = {} -- allem data indexed by computer id
+lib.net.myData          = {} -- what networkState[COMPID] would be
+
+
+if rednet.isOpen() then 
+    lib.print("network established here on comp #"..lib.net.COMPID)
+    STATUS = "ONLINE"
+else
+    lib.print("comp #"..lib.net.COMPID.." is blind to the network without a modem.")
+end
+
+-- :::: net foundation :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function lib.net.postToNetwork(header)
+    local packet = {
+        protocol = lib.net.PROTOCOL,
+        sender = lib.net.COMPID,
+        header = header or "UPDATE",
+        status = lib.net.STATUS,
+        timeSent = os.epoch("utc"),
+        payload = lib.net.myData
+    }
+    rednet.broadcast(packet, lib.net.PROTOCOL)
+end
+
+-- pp.print({asdf, "gar"})
+
+function lib.net.getNetwork()
+    local id, packet = rednet.receive(lib.net.PROTOCOL, 0.05)
+    if not (packet and type(packet) == "table") then return end
+    if packet.header == "IMNEWHERE" then
+        pp.print("comp #"..packet.sender.." has joined the network.")
+    end
+    if packet.header == "UPDATE" then
+        lib.net.networkState[packet.sender] = packet.payload
+    -- elseif packet.header == ""
+    end
+end 
+
+-- :::: patnet api     :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function lib.net.getNode(compid)
+    return lib.net.networkState[compid]
+end
+
+function lib.net.updateKey(k, v)
+    lib.net.myData[k] = v
+    lib.net.postToNetwork()
+end
+
+-- :::: sublevel stuff :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function lib.net.formatSublevelData()
+
+    myData.sl       = {}
+    myData.sl.lp    = myData.sublevel.getLogicalPose
+    myData.sl.pos   = myData.sublevel.getLogicalPose.position
+    myData.sl.quat  = myData.sublevel.getLogicalPose.orientation
+    myData.sl.pitch, 
+    myData.sl.yaw, 
+    myData.sl.roll  = myData.sublevel.getLogicalPose.orientation:toEuler()
+    
+end 
+
+function lib.net.updateSublevel()
+
+    local t1 = os.epoch("utc")
+
+    if sublevel then
+        lib.net.myData.sublevel = {}
+        
+        local i = 0
+        local sld = {}
+        for k, v in pairs(sublevel) do
+            if k ~= "setName" then
+                i = i + 1
+                sld[i] = function() lib.net.myData.sublevel[k] = v() end
+            end
+        end
+        
+        parallel.waitForAll(table.unpack(sld))
+        lib.net.formatSublevelData()
+    end
+
+end
+
+-- =======================================================================================================
+-- ive got lotion on my dick rn
+-- =======================================================================================================
+
 return lib
