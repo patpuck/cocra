@@ -40,4 +40,31 @@ function lib.yawMatrix(yaw)
 
 end
 
+function lib.daemon(func, ...)
+    local args = {...}    
+    while true do func(table.unpack(args)) end
+end
+
+function pp.ppprint(...)
+    local maxlen = 8
+    local tstr = textutils.formatTime(os.time("local"))
+    local msgs = {...}
+    local msg = "["..string.rep("0", maxlen-#tstr)..tstr.."]: "
+    for k, v in pairs(msgs) do
+        if v == nil then
+            v = "nil"
+        elseif v ~= v then
+            v = "NaN"
+        elseif type(v) == "string" then
+            v = v
+        else
+            v = pp.ren(v)
+        end
+        msg = msg..v.." "
+    end
+    return msg
+end
+
+function pp.print(...) print(pp.ppprint(...)) end
+
 return lib
