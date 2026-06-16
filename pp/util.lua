@@ -86,7 +86,7 @@ pp.net.myData          = {} -- what networkState[COMPID] would be
 
 if rednet.isOpen() then 
     pp.print("network established here on comp #"..pp.net.COMPID)
-    STATUS = "ONLINE"
+    pp.net.STATUS = "ONLINE"
 else
     pp.print("comp #"..pp.net.COMPID.." is blind to the network without a modem.")
 end
@@ -102,6 +102,9 @@ function pp.net.postToNetwork(header)
         timeSent = os.epoch("utc"),
         payload = pp.net.myData
     }
+
+    pp.net.networkState[packet.sender] = packet.payload
+    -- pp.print("broadcasting")
     rednet.broadcast(packet, pp.net.PROTOCOL)
 end
 
@@ -165,6 +168,7 @@ function pp.net.updateSublevel()
         parallel.waitForAll(table.unpack(sld))
         pp.net.formatSublevelData()
     end
+    pp.net.postToNetwork()
 
 end
 
