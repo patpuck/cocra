@@ -134,13 +134,13 @@ end
 
 function lib.net.formatSublevelData()
 
-    myData.sl       = {}
-    myData.sl.lp    = myData.sublevel.getLogicalPose
-    myData.sl.pos   = myData.sublevel.getLogicalPose.position
-    myData.sl.quat  = myData.sublevel.getLogicalPose.orientation
-    myData.sl.pitch, 
-    myData.sl.yaw, 
-    myData.sl.roll  = myData.sublevel.getLogicalPose.orientation:toEuler()
+    lib.net.myData.sl       = {}
+    lib.net.myData.sl.lp    = myData.sublevel.getLogicalPose
+    lib.net.myData.sl.pos   = myData.sublevel.getLogicalPose.position
+    lib.net.myData.sl.quat  = myData.sublevel.getLogicalPose.orientation
+    lib.net.myData.sl.pitch, 
+    lib.net.myData.sl.yaw, 
+    lib.net.myData.sl.roll  = myData.sublevel.getLogicalPose.orientation:toEuler()
     
 end 
 
