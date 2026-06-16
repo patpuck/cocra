@@ -111,7 +111,7 @@ function lib.net.getNetwork()
     local id, packet = rednet.receive(lib.net.PROTOCOL, 0.05)
     if not (packet and type(packet) == "table") then return end
     if packet.header == "IMNEWHERE" then
-        pp.print("comp #"..packet.sender.." has joined the network.")
+        lib.print("comp #"..packet.sender.." has joined the network.")
     end
     if packet.header == "UPDATE" then
         lib.net.networkState[packet.sender] = packet.payload
@@ -171,6 +171,6 @@ end
 -- ive got lotion on my dick rn
 -- =======================================================================================================
 
-pp.net.postToNetwork("IMNEWHERE")
+lib.net.postToNetwork("IMNEWHERE")
 
 return lib
