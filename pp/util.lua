@@ -6,7 +6,7 @@ function pp.mVec(M) return vector.new(M[1][1], M[1][2], M[1][3]) end
 -- function pp.vColumn(v) return matrix end
 function pp.fromPolar(r, theta, y) return vector.new( r * math.cos(theta), y or 0, -r * math.sin(theta) ) end
 function pp.clamp(n, min, max) return math.max(min, math.min(n, max)) end
-function pp.bound(n, bound, center) center = center or 0 return math.max(-bound + center, math.min(n, max + center)) end
+function pp.bound(n, bound, center) center = center or 0 return math.max(-bound + center, math.min(n, bound + center)) end
 function pp.invLerp(n, min, max) return (n-min)/(max-min) end
 function pp.invLerpClamped(n, min, max) return pp.clamp( pp.invLerp( n, min, max ), 0, 1 ) end
 function pp.vMat(v1,v2,v3)
