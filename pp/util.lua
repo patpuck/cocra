@@ -145,6 +145,49 @@ end
 
 -- :::: sublevel stuff :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function findOrigin() -- returns id of origin
+    local origins = {}
+    local origin = 0
+    for id, data in pairs(networkState)
+        if not data         then goto skiporigincheck end
+        if not data.NAME    then goto skiporigincheck end
+        if string.find( data.NAME , "gd_0" ) then
+            table.insert(#origins+1, id)
+        end
+        ::skiporigincheck::
+    end
+    if #origins > 1 then -- looks for the lightest origin to filter out imposterororzzz,,,,,
+
+        local masses = {}
+        local lessermass = math.huge
+        local lessermassid = 0
+        for k, id in pairs(origins) do
+            if not networkState[id].sl then 
+                table.remove(origins, k) 
+            else
+                table.insert(masses, id, networkState[id].sl.mass)
+            end
+        end
+        for id, mass in pairs(masses) do
+            if mass < lessermass then
+                lessermassid = id
+                lessermass = mass
+            end
+        end
+        origin = lessermass
+
+    elseif (#origins < 1) and pp.originKnown then
+        pp.print("origin not found")
+        pp.originKnown = false
+        return
+    else
+        origin = origins[1]
+    end
+    pp.originKnown = true
+    return origin
+end
+
+
 function pp.net.formatSublevelData()
 
     local dat = pp.net.myData
@@ -153,9 +196,19 @@ function pp.net.formatSublevelData()
     dat.sl.lp    = dat.sublevel.getLogicalPose
     dat.sl.pos   = dat.sublevel.getLogicalPose.position
     dat.sl.quat  = dat.sublevel.getLogicalPose.orientation
+    dat.sl.mass  = dat.sublevel.getMass
     dat.sl.pitch, 
     dat.sl.yaw, 
     dat.sl.roll  = dat.sublevel.getLogicalPose.orientation:toEuler()
+
+    if pp.net.origin then
+
+        local origin = networkState[pp.net.origin]
+
+        dat.sl.localpos     = dat.sl.pos - origin.sl.pos
+        -- dat.sl.localquat    = 
+
+    end
     
 end 
 
@@ -178,6 +231,14 @@ function pp.net.updateSublevel()
         parallel.waitForAll(table.unpack(sld))
         pp.net.formatSublevelData()
     end
+
+    local originID = findOrigin()
+    if originID then
+
+        pp.net.origin = originID
+
+    end
+    
     pp.net.postToNetwork()
 
 end
