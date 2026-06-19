@@ -69,6 +69,13 @@ end
 
 function pp.print(...) print(pp.ppprint(...)) end
 
+function pp.rpm(radpersec)
+    -- return 360/(2*math.pi) * 1/60 * radpersec
+    return ( (2*math.pi)/60 * 1/1 )^(-1) * radpersec
+end
+
+function pp.t() return os.epoch("utc")/1000 end
+
 -- =======================================================================================================
 -- patnet
 -- =======================================================================================================
@@ -82,6 +89,7 @@ pp.net.PROTOCOL        = "gd_patmesh"
 pp.net.COMPID          = os.getComputerID()
 pp.net.networkState    = {} -- allem data indexed by computer id
 pp.net.myData          = {} -- what networkState[COMPID] would be
+-- pp.net.FLAGS           = {} -- any other racial slurs the computer wishes to share
 
 
 if rednet.isOpen() then 
@@ -101,6 +109,7 @@ function pp.net.postToNetwork(header)
         status = pp.net.STATUS,
         timeSent = os.epoch("utc"),
         payload = pp.net.myData
+        -- flags = pp.net.FLAGS
     }
 
     pp.net.networkState[packet.sender] = packet.payload
