@@ -148,6 +148,7 @@ end
 function findOrigin() -- returns id of origin
     local origins = {}
     local origin = 0
+    local networkState = pp.net.networkState
     for id, data in pairs(networkState) do
         if not data         then goto skiporigincheck end
         if not data.NAME    then goto skiporigincheck end
