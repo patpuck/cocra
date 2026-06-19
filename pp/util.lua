@@ -148,7 +148,7 @@ end
 function findOrigin() -- returns id of origin
     local origins = {}
     local origin = 0
-    for id, data in pairs(networkState)
+    for id, data in pairs(networkState) do
         if not data         then goto skiporigincheck end
         if not data.NAME    then goto skiporigincheck end
         if string.find( data.NAME , "gd_0" ) then
