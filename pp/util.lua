@@ -245,6 +245,7 @@ function pp.net.formatSublevelData()
     -- pp.print(dat.sublevel.getLogicalPose.position, "AAAA", pp.tVec(dat.sublevel.getLogicalPose.position))
     dat.sl.quatTrue = dat.sublevel.getLogicalPose.orientation
     dat.sl.mass     = dat.sublevel.getMass
+    dat.sl.uuid     = dat.sublevel.getUniqueId
     
     dat.sl.pitchTrue, 
     dat.sl.yawTrue, 
