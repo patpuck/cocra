@@ -4,7 +4,7 @@ function pp.ren(n) return pretty.render(pretty.pretty(n)) end
 function pp.round(n, pre) pre = pre or 1 return math.floor(n/pre+0.5)*pre end
 function pp.mVec(M) return vector.new(M[1][1], M[1][2], M[1][3]) end
 -- function pp.vColumn(v) return matrix end
-function pp.tVec(T) return vector.new(T.x, T.y, T.z) end
+function pp.tVec(T) return vector.new(T.x,T.y,T.z) end
 function pp.tQuat(T) return quaternion.new(pp.tVec(T.v), T.a) end
 function pp.fromPolar(r, theta, y) return vector.new( r * math.cos(theta), y or 0, -r * math.sin(theta) ) end
 function pp.clamp(n, min, max) return math.max(min, math.min(n, max)) end
@@ -242,9 +242,10 @@ function pp.net.formatSublevelData()
     dat.sl          = {}
     dat.sl.lp       = dat.sublevel.getLogicalPose
     dat.sl.posTrue  = pp.tVec(dat.sublevel.getLogicalPose.position)
+    -- pp.print(dat.sublevel.getLogicalPose.position, "AAAA", pp.tVec(dat.sublevel.getLogicalPose.position))
     dat.sl.quatTrue = dat.sublevel.getLogicalPose.orientation
     dat.sl.mass     = dat.sublevel.getMass
-
+    
     dat.sl.pitchTrue, 
     dat.sl.yawTrue, 
     dat.sl.rollTrue = dat.sl.quatTrue:toEuler()
@@ -253,23 +254,24 @@ function pp.net.formatSublevelData()
         
         -- pp.print("PPNETORIGIN!!!! ")
         -- pp.net.origin = dat
-        pp.net.updateGlobalKey("origin", dat)
         -- pp.print(pp.net.origin)
 
-        dat.sl.localPos     = vector.new()
-        dat.sl.localQuat    = quaternion.new()
+        dat.sl.pos     = vector.new()
+        dat.sl.quat    = quaternion.new()
+        pp.net.updateGlobalKey("origin", dat)
         -- pp.print(dat.sl.localQuat)
 
     elseif pp.net.origin then
 
         local ori = pp.net.origin
 
-        -- pp.print("orisl: ",ori.sl.pos)
-        dat.sl.pos     = dat.sl.pos - pp.tVec(ori.sl.pos)
-        dat.sl.quat    = dat.sl.quat:conjugate() * pp.tQuat(ori.sl.quat)
+        -- pp.print("GAGAGA:",pp.net.origin)
+        -- pp.print("orisl: ",ori.sl.posTrue)
+        dat.sl.pos     = dat.sl.posTrue - pp.tVec(ori.sl.posTrue)
+        dat.sl.quat    = dat.sl.quatTrue:conjugate() * pp.tQuat(ori.sl.quatTrue)
         dat.sl.pitch,
         dat.sl.yaw,
-        dat.sl.roll    = dat.sl.quat:toEuler()
+        dat.sl.roll    = dat.sl.quatTrue:toEuler()
 
     end
     
@@ -294,13 +296,6 @@ function pp.net.updateSublevel()
         parallel.waitForAll(table.unpack(sld))
         pp.net.formatSublevelData()
     end
-
-    -- local originID = findOrigin()
-    -- if originID then
-
-    --     pp.net.origin = originID
-
-    -- end
     
     pp.net.postToNetwork()
 
