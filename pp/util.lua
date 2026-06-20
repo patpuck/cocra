@@ -145,48 +145,51 @@ end
 
 -- :::: sublevel stuff :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function findOrigin() -- returns id of origin
-    local origins = {}
-    local origin = 0
-    local networkState = pp.net.networkState
-    for id, data in pairs(networkState) do
-        if not data         then goto skiporigincheck end
-        if not data.NAME    then goto skiporigincheck end
-        if string.find( data.NAME , "gd_0" ) then
-            table.insert(#origins+1, id)
-        end
-        ::skiporigincheck::
-    end
-    if #origins > 1 then -- looks for the lightest origin to filter out imposterororzzz,,,,,
+-- function findOrigin() -- returns id of origin
+--     local origins = {}
+--     local origin = 0
+--     local networkState = pp.net.networkState
+--     for id, data in pairs(pp.net.networkState) do
+--         print(#pp.net.networkState)
+--         if not data         then goto skiporigincheck end
+--         -- pp.print("NO DATA")
+--         if not data.NAME    then goto skiporigincheck end
+--         -- pp.print("NO NAME")
+--         if string.find( data.NAME , "gd_0" ) then
+--             table.insert(#origins+1, id)
+--         end
+--         ::skiporigincheck::
+--     end
+--     if #origins > 1 then -- looks for the lightest origin to filter out imposterororzzz,,,,,
 
-        local masses = {}
-        local lessermass = math.huge
-        local lessermassid = 0
-        for k, id in pairs(origins) do
-            if not networkState[id].sl then 
-                table.remove(origins, k) 
-            else
-                table.insert(masses, id, networkState[id].sl.mass)
-            end
-        end
-        for id, mass in pairs(masses) do
-            if mass < lessermass then
-                lessermassid = id
-                lessermass = mass
-            end
-        end
-        origin = lessermass
+--         local masses = {}
+--         local lessermass = math.huge
+--         local lessermassid = 0
+--         for k, id in pairs(origins) do
+--             if not networkState[id].sl then 
+--                 table.remove(origins, k) 
+--             else
+--                 table.insert(masses, id, networkState[id].sl.mass)
+--             end
+--         end
+--         for id, mass in pairs(masses) do
+--             if mass < lessermass then
+--                 lessermassid = id
+--                 lessermass = mass
+--             end
+--         end
+--         origin = lessermass
 
-    elseif (#origins < 1) and pp.originKnown then
-        pp.print("origin not found")
-        pp.originKnown = false
-        return
-    else
-        origin = origins[1]
-    end
-    pp.originKnown = true
-    return origin
-end
+--     elseif (#origins < 1) and pp.originKnown then
+--         pp.print("origin not found")
+--         pp.originKnown = false
+--         return
+--     else
+--         origin = origins[1]
+--     end
+--     pp.originKnown = true
+--     return origin
+-- end
 
 
 function pp.net.formatSublevelData()
@@ -202,11 +205,14 @@ function pp.net.formatSublevelData()
     dat.sl.yaw, 
     dat.sl.roll  = dat.sublevel.getLogicalPose.orientation:toEuler()
 
-    if pp.net.origin then
+    if dat.origin then
+        
+        pp.print("PPNETORIGIN!!!! ",pp.net.origin)
+        pp.net.origin = dat
 
-        local origin = networkState[pp.net.origin]
+    elseif pp.net.origin then
 
-        dat.sl.localpos     = dat.sl.pos - origin.sl.pos
+        pp.print("PPNETORIGIN!!!! ",pp.net.origin)
         -- dat.sl.localquat    = 
 
     end
@@ -233,12 +239,12 @@ function pp.net.updateSublevel()
         pp.net.formatSublevelData()
     end
 
-    local originID = findOrigin()
-    if originID then
+    -- local originID = findOrigin()
+    -- if originID then
 
-        pp.net.origin = originID
+    --     pp.net.origin = originID
 
-    end
+    -- end
     
     pp.net.postToNetwork()
 
