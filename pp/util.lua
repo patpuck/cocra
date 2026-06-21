@@ -2,6 +2,7 @@ local pretty = require "cc.pretty"
 local pp = {}
 function pp.ren(n) return pretty.render(pretty.pretty(n)) end
 function pp.round(n, pre) pre = pre or 1 return math.floor(n/pre+0.5)*pre end
+function pp.countIndeces(T) local n = 0 for k, v in pairs(T) do n=n+1 end return n end
 function pp.mVec(M) return vector.new(M[1][1], M[1][2], M[1][3]) end
 -- function pp.vColumn(v) return matrix end
 function pp.tVec(T) return vector.new(T.x,T.y,T.z) end
