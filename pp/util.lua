@@ -269,7 +269,7 @@ function pp.net.formatSublevelData()
         -- pp.print("GAGAGA:",pp.net.origin)
         -- pp.print("orisl: ",ori.sl.posTrue)
         dat.sl.pos     = dat.sl.posTrue - pp.tVec(ori.sl.posTrue)
-        dat.sl.pos     = pp.tQuat(dat.sl.quatTrue):conjugate() * dat.sl.pos
+        dat.sl.pos     = pp.tQuat(dat.sl.quatTrue):conjugate() * dat.sl.pos * dat.sl.pos:length()
         dat.sl.quat    = dat.sl.quatTrue:conjugate() * pp.tQuat(ori.sl.quatTrue)
         dat.sl.pitch,
         dat.sl.yaw,
